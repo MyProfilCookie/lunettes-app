@@ -20,12 +20,15 @@ const categoryMeta: Record<string, { icon: string; gradient: string }> = {
 };
 
 async function getAllCategories() {
-  return prisma.category.findMany({
-    orderBy: { order: 'asc' },
-    include: {
-      _count: { select: { glasses: true } },
-    },
-  });
+  try {
+    if (!prisma) return [];
+    return await prisma.category.findMany({
+      orderBy: { order: 'asc' },
+      include: {
+        _count: { select: { glasses: true } },
+      },
+    });
+  } catch { return []; }
 }
 
 export default async function CategoriesPage() {

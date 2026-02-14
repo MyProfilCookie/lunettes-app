@@ -22,24 +22,30 @@ const categoryIcons: Record<string, string> = {
 };
 
 async function getCategoryWithProducts(slug: string) {
-  const category = await prisma.category.findUnique({
-    where: { slug },
-    include: {
-      glasses: {
-        where: { isAvailable: true },
-        include: { brand: true, category: true, images: { where: { isPrimary: true }, take: 1 } },
-        orderBy: [{ isBestSeller: 'desc' }, { isNew: 'desc' }, { createdAt: 'desc' }],
+  try {
+    if (!prisma) return null;
+    const category = await prisma.category.findUnique({
+      where: { slug },
+      include: {
+        glasses: {
+          where: { isAvailable: true },
+          include: { brand: true, category: true, images: { where: { isPrimary: true }, take: 1 } },
+          orderBy: [{ isBestSeller: 'desc' }, { isNew: 'desc' }, { createdAt: 'desc' }],
+        },
       },
-    },
-  });
-  return category;
+    });
+    return category;
+  } catch { return null; }
 }
 
 async function getAllCategories() {
-  return prisma.category.findMany({
-    orderBy: { order: 'asc' },
-    include: { _count: { select: { glasses: true } } },
-  });
+  try {
+    if (!prisma) return [];
+    return await prisma.category.findMany({
+      orderBy: { order: 'asc' },
+      include: { _count: { select: { glasses: true } } },
+    });
+  } catch { return []; }
 }
 
 export default async function CategoryPage({

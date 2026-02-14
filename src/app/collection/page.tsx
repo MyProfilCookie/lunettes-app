@@ -7,34 +7,40 @@ export const dynamic = 'force-dynamic';
 
 // Fetch glasses from database
 async function getGlasses(category?: string, type?: string) {
-  const glasses = await prisma.glasses.findMany({
-    where: {
-      isAvailable: true,
-      ...(category && { category: { slug: category } }),
-      ...(type && { type: type as any }),
-    },
-    include: {
-      category: true,
-      brand: true,
-      images: {
-        where: { isPrimary: true },
-        take: 1,
+  try {
+    if (!prisma) return [];
+    const glasses = await prisma.glasses.findMany({
+      where: {
+        isAvailable: true,
+        ...(category && { category: { slug: category } }),
+        ...(type && { type: type as any }),
       },
-      colors: true,
-    },
-    orderBy: [
-      { isBestSeller: 'desc' },
-      { isNew: 'desc' },
-      { createdAt: 'desc' },
-    ],
-  });
-  return glasses;
+      include: {
+        category: true,
+        brand: true,
+        images: {
+          where: { isPrimary: true },
+          take: 1,
+        },
+        colors: true,
+      },
+      orderBy: [
+        { isBestSeller: 'desc' },
+        { isNew: 'desc' },
+        { createdAt: 'desc' },
+      ],
+    });
+    return glasses;
+  } catch { return []; }
 }
 
 async function getCategories() {
-  return prisma.category.findMany({
-    orderBy: { order: 'asc' },
-  });
+  try {
+    if (!prisma) return [];
+    return await prisma.category.findMany({
+      orderBy: { order: 'asc' },
+    });
+  } catch { return []; }
 }
 
 export default async function CollectionPage({

@@ -8,6 +8,7 @@ export const dynamic = 'force-dynamic';
 
 async function getTrendingProducts() {
   try {
+    if (!prisma) return [];
     return await prisma.glasses.findMany({
       where: { isAvailable: true, isBestSeller: true },
       include: { brand: true, category: true, images: { where: { isPrimary: true }, take: 1 } },
@@ -18,6 +19,7 @@ async function getTrendingProducts() {
 
 async function getPromoProducts() {
   try {
+    if (!prisma) return [];
     return await prisma.glasses.findMany({
       where: { isAvailable: true, isPromo: true },
       include: { brand: true, category: true, images: { where: { isPrimary: true }, take: 1 } },
@@ -28,6 +30,7 @@ async function getPromoProducts() {
 
 async function getNewProducts() {
   try {
+    if (!prisma) return [];
     return await prisma.glasses.findMany({
       where: { isAvailable: true, isNew: true },
       include: { brand: true, category: true, images: { where: { isPrimary: true }, take: 1 } },
