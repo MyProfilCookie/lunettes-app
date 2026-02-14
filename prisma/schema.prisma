@@ -7,11 +7,262 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// Exemple de modèle
+// ==================== UTILISATEURS ====================
 model User {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  name      String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id            String    @id @default(cuid())
+  email         String    @unique
+  name          String?
+  phone         String?
+  avatar        String?
+  role          UserRole  @default(CUSTOMER)
+  favorites     Favorite[]
+  orders        Order[]
+  cart          CartItem[]
+  reviews       Review[]
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+enum UserRole {
+  CUSTOMER
+  ADMIN
+  STAFF
+}
+
+// ==================== LUNETTES ====================
+model Glasses {
+  id            String    @id @default(cuid())
+  name          String
+  slug          String    @unique
+  description   String?
+  shortDesc     String?   // Description courte pour les cartes
+  
+  // Prix
+  price         Float
+  originalPrice Float?    // Prix barré (avant promotion)
+  
+  // Catégorisation
+  category      Category  @relation(fields: [categoryId], references: [id])
+  categoryId    String
+  brand         Brand?    @relation(fields: [brandId], references: [id])
+  brandId       String?
+  collection    String?   // Ex: "Matt Pokora", "Summer 2024"
+  
+  // Type de produit
+  type          GlassesType @default(OPTICAL)
+  gender        Gender      @default(UNISEX)
+  frameShape    FrameShape?
+  frameMaterial FrameMaterial?
+  
+  // Caractéristiques
+  isNew         Boolean   @default(false)
+  isBestSeller  Boolean   @default(false)
+  isPromo       Boolean   @default(false)
+  blueLight     Boolean   @default(false) // Protection lumière bleue
+  
+  // Stock
+  stock         Int       @default(0)
+  isAvailable   Boolean   @default(true)
+  
+  // Relations
+  images        GlassesImage[]
+  colors        GlassesColor[]
+  reviews       Review[]
+  favorites     Favorite[]
+  cartItems     CartItem[]
+  orderItems    OrderItem[]
+  
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  
+  @@index([categoryId])
+  @@index([brandId])
+  @@index([type])
+  @@index([slug])
+}
+
+enum GlassesType {
+  OPTICAL       // Lunettes de vue
+  SUNGLASSES    // Lunettes de soleil
+  SPORTS        // Lunettes de sport
+  KIDS          // Lunettes enfants
+}
+
+enum Gender {
+  MEN
+  WOMEN
+  KIDS
+  UNISEX
+}
+
+enum FrameShape {
+  ROUND         // Ronde
+  SQUARE        // Carrée
+  RECTANGLE     // Rectangulaire
+  OVAL          // Ovale
+  CAT_EYE       // Papillon/Oeil de chat
+  AVIATOR       // Aviateur
+  BROWLINE      // Clubmaster
+  GEOMETRIC     // Géométrique
+}
+
+enum FrameMaterial {
+  METAL
+  PLASTIC
+  ACETATE
+  TITANIUM
+  WOOD
+  MIXED
+}
+
+// ==================== IMAGES ====================
+model GlassesImage {
+  id          String    @id @default(cuid())
+  url         String
+  alt         String?
+  isPrimary   Boolean   @default(false)
+  order       Int       @default(0)
+  glasses     Glasses   @relation(fields: [glassesId], references: [id], onDelete: Cascade)
+  glassesId   String
+  
+  @@index([glassesId])
+}
+
+// ==================== COULEURS ====================
+model GlassesColor {
+  id          String    @id @default(cuid())
+  name        String    // Ex: "Noir mat", "Écaille"
+  hexCode     String?   // Ex: "#000000"
+  imageUrl    String?   // Image avec cette couleur
+  stock       Int       @default(0)
+  glasses     Glasses   @relation(fields: [glassesId], references: [id], onDelete: Cascade)
+  glassesId   String
+  
+  @@index([glassesId])
+}
+
+// ==================== CATÉGORIES ====================
+model Category {
+  id          String    @id @default(cuid())
+  name        String
+  slug        String    @unique
+  description String?
+  imageUrl    String?
+  order       Int       @default(0)
+  glasses     Glasses[]
+  
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+// ==================== MARQUES ====================
+model Brand {
+  id          String    @id @default(cuid())
+  name        String
+  slug        String    @unique
+  logo        String?
+  description String?
+  website     String?
+  glasses     Glasses[]
+  
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+// ==================== FAVORIS ====================
+model Favorite {
+  id          String    @id @default(cuid())
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId      String
+  glasses     Glasses   @relation(fields: [glassesId], references: [id], onDelete: Cascade)
+  glassesId   String
+  createdAt   DateTime  @default(now())
+  
+  @@unique([userId, glassesId])
+  @@index([userId])
+  @@index([glassesId])
+}
+
+// ==================== PANIER ====================
+model CartItem {
+  id          String    @id @default(cuid())
+  quantity    Int       @default(1)
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId      String
+  glasses     Glasses   @relation(fields: [glassesId], references: [id], onDelete: Cascade)
+  glassesId   String
+  colorId     String?   // Couleur choisie
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  
+  @@unique([userId, glassesId, colorId])
+  @@index([userId])
+}
+
+// ==================== COMMANDES ====================
+model Order {
+  id            String      @id @default(cuid())
+  orderNumber   String      @unique
+  status        OrderStatus @default(PENDING)
+  total         Float
+  shippingCost  Float       @default(0)
+  
+  // Adresse de livraison
+  shippingAddress String?
+  shippingCity    String?
+  shippingZip     String?
+  shippingCountry String?   @default("France")
+  
+  user          User        @relation(fields: [userId], references: [id])
+  userId        String
+  items         OrderItem[]
+  
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  
+  @@index([userId])
+  @@index([orderNumber])
+}
+
+enum OrderStatus {
+  PENDING       // En attente
+  CONFIRMED     // Confirmée
+  PROCESSING    // En préparation
+  SHIPPED       // Expédiée
+  DELIVERED     // Livrée
+  CANCELLED     // Annulée
+}
+
+model OrderItem {
+  id          String    @id @default(cuid())
+  quantity    Int
+  price       Float     // Prix au moment de l'achat
+  colorName   String?
+  
+  order       Order     @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  orderId     String
+  glasses     Glasses   @relation(fields: [glassesId], references: [id])
+  glassesId   String
+  
+  @@index([orderId])
+}
+
+// ==================== AVIS ====================
+model Review {
+  id          String    @id @default(cuid())
+  rating      Int       // 1-5
+  title       String?
+  comment     String?
+  isVerified  Boolean   @default(false) // Achat vérifié
+  
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId      String
+  glasses     Glasses   @relation(fields: [glassesId], references: [id], onDelete: Cascade)
+  glassesId   String
+  
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  
+  @@unique([userId, glassesId])
+  @@index([glassesId])
 }
