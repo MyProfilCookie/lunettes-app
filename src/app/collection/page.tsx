@@ -3,6 +3,8 @@ import { Navbar } from '../../components/Navbar';
 import { ProductCard } from '../../components/ProductCard';
 import Link from 'next/link';
 
+export const dynamic = 'force-dynamic';
+
 // Fetch glasses from database
 async function getGlasses(category?: string, type?: string) {
   const glasses = await prisma.glasses.findMany({

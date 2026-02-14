@@ -2,6 +2,8 @@ import Link from 'next/link';
 import { Navbar } from '../../components/Navbar';
 import { prisma } from '../../lib/prisma';
 
+export const dynamic = 'force-dynamic';
+
 const categoryMeta: Record<string, { icon: string; gradient: string }> = {
   'restaurants': { icon: '🍽️', gradient: 'from-orange-500/20 to-red-500/20' },
   'epicerie': { icon: '🛒', gradient: 'from-green-500/20 to-emerald-500/20' },

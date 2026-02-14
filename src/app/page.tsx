@@ -4,6 +4,8 @@ import { CategoryGrid } from "../components/CategoryGrid";
 import { ProductCardMarketplace } from "../components/ProductCardMarketplace";
 import { prisma } from "../lib/prisma";
 
+export const dynamic = 'force-dynamic';
+
 async function getTrendingProducts() {
   try {
     return await prisma.glasses.findMany({
