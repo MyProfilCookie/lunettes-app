@@ -98,7 +98,7 @@ export default async function CategoryPage({
       </section>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
-        <div className="flex gap-8">
+        <div className="flex gap-8 overflow-hidden">
           {/* Sidebar */}
           <aside className="hidden lg:block w-56 shrink-0">
             <h3 className="text-[11px] font-bold uppercase tracking-widest mb-4 text-zinc-500">Catégories</h3>
@@ -129,7 +129,7 @@ export default async function CategoryPage({
           </aside>
 
           {/* Products */}
-          <main className="flex-1">
+          <main className="flex-1 min-w-0">
             <div className="lg:hidden mb-4 sm:mb-6 -mx-4 sm:-mx-6 px-4 sm:px-6 overflow-x-auto scrollbar-hide">
               <div className="flex gap-2 pb-2">
                 {allCategories.map((cat) => {
