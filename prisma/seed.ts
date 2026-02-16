@@ -1,4 +1,4 @@
-import { PrismaClient, GlassesType, Gender, FrameShape, FrameMaterial } from '@prisma/client';
+import { PrismaClient, GlassesType, Gender, FrameShape } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
@@ -38,6 +38,18 @@ async function main() {
   ]);
 
   console.log(`✅ ${brands.length} marques créées`);
+
+  // Matières (Remplaçant l'enum FrameMaterial)
+  const materials = await Promise.all([
+    prisma.material.upsert({ where: { slug: 'metal' }, update: {}, create: { name: 'Métal', slug: 'metal', skuCode: 'MET' } }),
+    prisma.material.upsert({ where: { slug: 'plastique' }, update: {}, create: { name: 'Plastique', slug: 'plastique', skuCode: 'PLA' } }),
+    prisma.material.upsert({ where: { slug: 'acetate' }, update: {}, create: { name: 'Acétate', slug: 'acetate', skuCode: 'ACE' } }),
+    prisma.material.upsert({ where: { slug: 'titane' }, update: {}, create: { name: 'Titane', slug: 'titane', skuCode: 'TIT' } }),
+    prisma.material.upsert({ where: { slug: 'bois' }, update: {}, create: { name: 'Bois', slug: 'bois', skuCode: 'BOI' } }),
+    prisma.material.upsert({ where: { slug: 'mixte' }, update: {}, create: { name: 'Mixte', slug: 'mixte', skuCode: 'MIX' } }),
+  ]);
+
+  console.log(`✅ ${materials.length} matières créées`);
 
   // Index par slug pour accès rapide
   const catMap: Record<string, string> = {};
