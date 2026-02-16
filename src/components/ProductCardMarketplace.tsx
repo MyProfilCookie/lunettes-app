@@ -37,7 +37,7 @@ export function ProductCardMarketplace({
       className="card group block overflow-hidden hover:scale-[1.02] hover:shadow-lg hover:shadow-blue-500/5"
     >
       {/* Image */}
-      <div className="relative aspect-[4/3] overflow-hidden bg-black rounded-t-2xl">
+      <div className="relative aspect-square sm:aspect-[4/3] overflow-hidden bg-black rounded-t-2xl">
         {imageUrl ? (
           <Image
             src={imageUrl}
@@ -55,14 +55,14 @@ export function ProductCardMarketplace({
         )}
 
         {/* Badges */}
-        <div className="absolute top-3 left-3 flex flex-col gap-1.5">
+        <div className="absolute top-2 left-2 sm:top-3 sm:left-3 flex flex-col gap-1 sm:gap-1.5">
           {isPromo && discount > 0 && (
-            <span className="px-2 py-0.5 text-[11px] font-bold rounded-lg text-white" style={{ background: 'var(--danger)' }}>
+            <span className="px-1.5 sm:px-2 py-0.5 text-[10px] sm:text-[11px] font-bold rounded-md sm:rounded-lg text-white" style={{ background: 'var(--danger)' }}>
               -{discount}%
             </span>
           )}
           {isNew && (
-            <span className="px-2 py-0.5 text-[11px] font-bold rounded-lg text-white" style={{ background: 'var(--accent)' }}>
+            <span className="px-1.5 sm:px-2 py-0.5 text-[10px] sm:text-[11px] font-bold rounded-md sm:rounded-lg text-white" style={{ background: 'var(--accent)' }}>
               Nouveau
             </span>
           )}
@@ -70,27 +70,27 @@ export function ProductCardMarketplace({
       </div>
 
       {/* Content */}
-      <div className="p-4 space-y-2.5">
+      <div className="p-3 sm:p-4 space-y-1.5 sm:space-y-2.5">
         <div>
-          <h3 className="text-[14px] font-semibold text-white truncate">{name}</h3>
+          <h3 className="text-[13px] sm:text-[14px] font-semibold text-white truncate">{name}</h3>
           {brandName && (
-            <p className="text-[12px] text-zinc-500 mt-0.5">{brandName}</p>
+            <p className="text-[11px] sm:text-[12px] text-zinc-500 mt-0.5">{brandName}</p>
           )}
         </div>
 
         {shortDesc && (
-          <p className="text-[13px] text-zinc-600 line-clamp-1">{shortDesc}</p>
+          <p className="text-[12px] sm:text-[13px] text-zinc-600 line-clamp-1">{shortDesc}</p>
         )}
 
-        <div className="flex items-center justify-between pt-1">
-          <div className="flex items-baseline gap-2">
-            <span className="text-[15px] font-bold text-white">{price.toFixed(2)} €</span>
+        <div className="flex items-center justify-between pt-0.5 sm:pt-1">
+          <div className="flex items-baseline gap-1.5 sm:gap-2">
+            <span className="text-[13px] sm:text-[15px] font-bold text-white">{price.toFixed(2)} €</span>
             {originalPrice && originalPrice > price && (
-              <span className="text-[12px] text-zinc-600 line-through">{originalPrice.toFixed(2)} €</span>
+              <span className="text-[10px] sm:text-[12px] text-zinc-600 line-through">{originalPrice.toFixed(2)} €</span>
             )}
           </div>
           {categoryName && (
-            <span className="text-[10px] font-medium uppercase tracking-wider text-zinc-600">{categoryName}</span>
+            <span className="text-[9px] sm:text-[10px] font-medium uppercase tracking-wider text-zinc-600 hidden sm:inline">{categoryName}</span>
           )}
         </div>
       </div>
