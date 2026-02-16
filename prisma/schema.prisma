@@ -29,34 +29,52 @@ enum UserRole {
   STAFF
 }
 
+
+// ==================== MATIERES ====================
+model Material {
+  id          String    @id @default(cuid())
+  name        String    // Ex: "Métal", "Plastique", "Titane"
+  slug        String    @unique
+  skuCode     String?   @unique // Code court pour les SKU (ex: "MET", "PLA")
+  description String?
+  glasses     Glasses[]
+  
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
 // ==================== LUNETTES ====================
 model Glasses {
   id            String    @id @default(cuid())
   name          String
   slug          String    @unique
   description   String?
-  shortDesc     String?   // Description courte pour les cartes
+  shortDesc     String?
   
   // Prix
   price         Float
-  originalPrice Float?    // Prix barré (avant promotion)
+  originalPrice Float?
   
   // Catégorisation
   category      Category  @relation(fields: [categoryId], references: [id])
   categoryId    String
   brand         Brand?    @relation(fields: [brandId], references: [id])
   brandId       String?
-  collection    String?   // Ex: "Matt Pokora", "Summer 2024"
+  collection    String?
   
   // Type de produit
   type          GlassesType @default(OPTICAL)
   gender        Gender      @default(UNISEX)
   frameShape    FrameShape?
-  frameMaterial FrameMaterial?
   
+  // Matière (Relation vers Material)
+  material      Material?   @relation(fields: [materialId], references: [id])
+  materialId    String?
+
   // Caractéristiques
   isNew         Boolean   @default(false)
   isBestSeller  Boolean   @default(false)
+
   isPromo       Boolean   @default(false)
   blueLight     Boolean   @default(false) // Protection lumière bleue
   
@@ -106,14 +124,7 @@ enum FrameShape {
   GEOMETRIC     // Géométrique
 }
 
-enum FrameMaterial {
-  METAL
-  PLASTIC
-  ACETATE
-  TITANIUM
-  WOOD
-  MIXED
-}
+
 
 // ==================== IMAGES ====================
 model GlassesImage {
